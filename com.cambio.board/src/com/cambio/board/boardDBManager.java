@@ -5,6 +5,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class boardDBManager {
 	
@@ -14,6 +16,42 @@ public class boardDBManager {
 		return bdm;
 	}
 	private staticValues sv = staticValues.getInstance();
+	
+	//회원목록
+	public List doSelect() {
+		Connection con = null; //DB 연결 객체
+		PreparedStatement pstmt = null; //SQL 질의문 담는 객체
+		ResultSet rs = null; // table 내용 담는 객체
+		List<memberDTO> list = new ArrayList<memberDTO>();
+		try {
+			con = doConnection();
+			pstmt = con.prepareStatement(" select * from member ");
+			rs = pstmt.executeQuery();
+			
+//			System.out.println("rs.next = " + rs.next());
+//			System.out.println("rs.next = " + rs.next());
+//			System.out.println("rs.next = " + rs.next());
+//			System.out.println("rs.next = " + rs.next());
+			
+			while(rs.next()) {
+				memberDTO md = new memberDTO();
+				md.setId(rs.getString("id"));
+				md.setName(rs.getString("name"));
+				md.setGender(rs.getString("gender"));
+				md.setAge(rs.getString("age"));
+				md.setAre(rs.getString("are"));
+				md.setPhone(rs.getString("phone"));
+				md.setMail(rs.getString("mail"));
+				list.add(md);
+			}
+			System.out.println(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			doClose(rs, pstmt, con);
+		}
+		return list;
+	}
 	
 	//회원가입
 	public boolean doinsert(memberDTO md) {
@@ -85,6 +123,58 @@ public class boardDBManager {
 		}
 		
 		return logincheck;
+	}
+	
+	//마이페이지 수정
+	public boolean doUpdateRow(memberDTO md) {
+		Connection con = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			con = doConnection();
+			pstmt = con.prepareStatement(" update member " + 
+										" set pw =?, are =?, phone =?, mail =? " + 
+										" where id =? ");
+			
+			pstmt.setString(1, md.getPw());
+			pstmt.setString(2, md.getAre());
+			pstmt.setString(2, md.getPhone());
+			pstmt.setString(2, md.getMail());
+			pstmt.setString(3, md.getId());
+			pstmt.executeUpdate();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}finally {
+			doClose(pstmt, con);
+		}
+		
+		return true;
+	}
+	
+	//아이디 확인
+	public memberDTO doSelectRow(String id) {
+		Connection con = null; //DB 연결 객체
+		PreparedStatement pstmt = null; //SQL 질의문 담는 객체
+		ResultSet rs = null; // table 내용 담는 객체
+		memberDTO md = new memberDTO();
+		try {
+			con = doConnection();
+			pstmt = con.prepareStatement(" select * from member where id = ?");
+			pstmt.setString(1, id);
+			rs = pstmt.executeQuery();
+			
+			if(rs.next()) {
+				md.setId(rs.getString("id"));
+				md.setPw(rs.getString("pw"));
+			}			
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		} finally {
+			doClose(rs, pstmt, con);
+		}
+		return md;
 	}
 	
 	//연결하기 connection 반환

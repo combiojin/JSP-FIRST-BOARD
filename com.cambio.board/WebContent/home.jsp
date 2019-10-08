@@ -40,7 +40,6 @@
 	}
 	.h11 {
 		color: white; 
-		padding: 30px 25px 0px 0;
 	}
 	a {
 		text-decoration: none;
@@ -54,6 +53,7 @@
 	.board {
 		text-align: right;
 		width: 100%;
+		height: 90px;
 	}
 	.login{
 		color: white; 
@@ -61,6 +61,9 @@
 	}
 	.out{
 		float: right;
+	}
+	.board1{
+		line-height: 5em;
 	}
 </style>
 </head>
@@ -71,7 +74,6 @@
 				String login = (String)session.getAttribute("login");
 				String id = (String) session.getAttribute("id");
 			%>
-			<%=id %>님 환영합니다.
 		</div>
 		<div class="div1">
 			<% if(login != null && login.equals("sce")){ %>
@@ -82,7 +84,6 @@
 			<%} %>
 			<a href = "home.jsp"><h1 class="h11">cambio</h1></a>
 			<div class=board>
-				<a class = "board1" href = "home.jsp?menu=subhome">홈</a>
 				<a class = "board1" href = "home.jsp?menu=board">커뮤니티</a>
 				<a class = "board1" href = "home.jsp?menu=list">회원목록</a>
 				<a class = "board1" href = "home.jsp?menu=mypage">마이페이지</a>
